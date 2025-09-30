@@ -1,4 +1,4 @@
-% % IN ROMM SOUNDS TASK DATA ANALYSIS
+% % IN ROOM SOUNDS TASK DATA ANALYSIS
 % -----------------------------------
 % The code performs the pre-processing and data analysis pipeline for 
 % the Oddball EEG data collected with Mentalab Amplifier (32 Channel)
@@ -155,4 +155,4 @@ end
 
 % plotting topographies with Matlab markers
 peaks2plot = [68 128 200 328];
-pop_topoplot(EEG, 1, peaks2plot, 'Sticks', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEG.chaninfo); 
+pop_topoplot(EEG, 1, peaks2plot, 'Stick', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEG.chaninfo); 
