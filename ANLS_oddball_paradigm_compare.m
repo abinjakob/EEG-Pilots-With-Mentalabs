@@ -31,7 +31,7 @@ clear all; clc; close all;
 % -- Files & Folders --
 
 % folder with EEG files 
-foldername = 'Recording26092025';
+foldername = 'Recording30092025';
 % XDF file to load for analysis
 filename   = 'Oddball_run001.set';
 
@@ -56,6 +56,15 @@ PRUNE = 4;
 % Set '0' for No Re-refrencing [OR] '1' to Re-refrencing to CAR [OR] '2' to Re-refrencing to Mastoids
 re_ref = 2;
 
+% Shift Latency of events?
+% set true to shift latency 
+correct_latency = true;
+% [if true] 
+% list of events to shift
+events2correct = {'1', '2'};
+% latency to shift (in ms)
+latency2shift = 60;
+
 % Save figures to folder?
 % Set 'true' to save figures to the folder
 save_fig = true;
@@ -72,6 +81,19 @@ EEG = pop_loadset('filename', filename, 'filepath', filepath);
 % set current directory
 cd(fullfile(rootpath, 'Analysis Scripts'));
 display('Directory Changed')
+
+
+% event latency correction
+if correct_latency
+    sampleshift = round((latency2shift/1000) * EEG.srate);  
+    for i = 1:length(EEG.event)
+        if ismember(EEG.event(i).type, events2correct)
+            EEG.event(i).latency = EEG.event(i).latency + sampleshift;
+        end
+    end
+    EEG = eeg_checkset(EEG, 'eventconsistency');
+    display(['Latency of events ', strjoin(events2correct, ', '), ' corrected by ', num2str(latency2shift), ' ms'])
+end
 
 % filtering
 disp(['Data Filtering: LP = ', num2str(LP), ' HP = ', num2str(HP)])
@@ -161,6 +183,12 @@ end
 
 %% plotting topgraphies
 
-peaks2plot = [80 188 308];
-pop_topoplot(EEGstd, 1, peaks2plot, 'Standard Tones', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEGstd.chaninfo); 
-pop_topoplot(EEGodd, 1, peaks2plot, 'Deviant Tones', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEGstd.chaninfo);
+% plotting topographies with Matlab markers
+peaks2plot = [152 188 236 315];
+pop_topoplot(EEGstd, 1, peaks2plot, 'Standard', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEGstd.chaninfo); 
+pop_topoplot(EEGodd, 1, peaks2plot, 'Deviant', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEGstd.chaninfo);
+pop_topoplot(EEGboth, 1, peaks2plot, 'Both', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEGstd.chaninfo);
+
+% plotting topographies with Bela markers
+peaks2plot = [84 128 175 248];
+pop_topoplot(EEGbela, 1, peaks2plot, 'Bela', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEGstd.chaninfo);

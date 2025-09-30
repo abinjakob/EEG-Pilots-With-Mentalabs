@@ -18,7 +18,7 @@ clear; clc; close all;
 rootpath     = '/Users/abinjacob/Documents/02 Translational Psychology/Research Work/nEEGlace/Recordings/Pilots/Soundscape-Project';
 
 % path to the data folder 
-foldername  = 'Recording26092025';
+foldername  = 'Recording30092025';
 
 % file to convert : 
 % add a specific filename or 'ALL' to convert all files in folder
