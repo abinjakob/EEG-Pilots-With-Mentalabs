@@ -184,11 +184,11 @@ end
 %% plotting topgraphies
 
 % plotting topographies with Matlab markers
-peaks2plot = [152 188 236 315];
+peaks2plot = [76 132 192 264 368];
 pop_topoplot(EEGstd, 1, peaks2plot, 'Standard', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEGstd.chaninfo); 
 pop_topoplot(EEGodd, 1, peaks2plot, 'Deviant', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEGstd.chaninfo);
 pop_topoplot(EEGboth, 1, peaks2plot, 'Both', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEGstd.chaninfo);
 
 % plotting topographies with Bela markers
-peaks2plot = [84 128 175 248];
+% peaks2plot = [84 128 175 248];
 pop_topoplot(EEGbela, 1, peaks2plot, 'Bela', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEGstd.chaninfo);

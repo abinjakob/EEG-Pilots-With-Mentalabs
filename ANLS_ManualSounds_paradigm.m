@@ -147,12 +147,12 @@ legend(tasknames)
 
 % save plot
 if save_fig
-    plotsave = fullfile(plotfolder, ['InRoomSound', plotname, '.png']);
+    plotsave = fullfile(plotfolder, ['InRoomSound_', plotname, '.png']);
     saveas(gcf, plotsave)
 end 
 
 %% -- plotting topgraphies
 
 % plotting topographies with Matlab markers
-peaks2plot = [76 132 224 340];
-pop_topoplot(EEG, 1, peaks2plot, 'Standard', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEG.chaninfo); 
+peaks2plot = [68 128 200 328];
+pop_topoplot(EEG, 1, peaks2plot, 'Sticks', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEG.chaninfo); 
