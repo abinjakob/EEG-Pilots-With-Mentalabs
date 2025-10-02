@@ -12,10 +12,11 @@
 %        - Epoch the data based on events and epoch periods
 %        - Remove artifactual epochs
 %        - Baseline correction
-% 3. Compute ERP for tones and plots them to a single plot
+% 3. Compute ERP for sounds and plots them to a single plot
 %
 % Pre-requisits:
-% - Assumes the data is in .set format (Use PROC_convertXDF_and_mapOnsets.m script before running this script)
+% - Assumes the data is in .set format (Use PROC_convertXDF_and_mapOnsets.m 
+%   script before running this script)
 % - Requires following functions to run: plotStyles
 % 
 % Author:   Abin Jacob 

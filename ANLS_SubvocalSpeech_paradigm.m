@@ -11,10 +11,11 @@
 %        - Epoch the data based on events and epoch periods
 %        - Remove artifactual epochs
 %        - Baseline correction
-% 3. Compute ERP for regular and odd tones and plot them for each channel 
+% 3. Compute RMS and plots the average of the envelope 
 %
 % Pre-requisits:
-% - Assumes the data is in .set format (Use convertXDF.m script before running this script)
+% - Assumes the data is in .set format (Use PROC_convertXDF_and_mapOnsets.m 
+%   script before running this script)
 % - Requires following functions to run: plotStyles
 % 
 % Author:   Abin Jacob 
@@ -32,7 +33,7 @@ clear all; clc; close all;
 % folder with EEG files 
 foldername = 'Recording30092025';
 % XDF file to load for analysis
-filename   = 'Subvocal_run001.set';
+filename   = 'Subvocal_run001.set';    
 
 % path to the folder
 rootpath = '/Users/abinjacob/Documents/02 Translational Psychology/Research Work/nEEGlace/Recordings/Pilots/Soundscape-Project';
@@ -46,7 +47,7 @@ HP = 20; HPorder = 826;
 % low-pass filter  
 LP = 100; LPorder = 776; 
 % epoch period 
-epoch_start = -0.5; epoch_end = 1;
+epoch_start = -1.5; epoch_end = 2;
 % reject artefactual epochs 
 PRUNE = 4;
 
@@ -56,12 +57,11 @@ re_ref = 0;
 
 % Save figures to folder?
 % Set 'true' to save figures to the folder
-save_fig = false;
+save_fig = true;
 
 % ------------------------------------------------------------------------
 
-
-%% -- Pre-Processing EEG Data --
+%% data processing  
 
 % -- Load files to EEGLAB --
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
@@ -70,7 +70,6 @@ EEG = pop_loadset('filename', filename, 'filepath', filepath);
 % set current directory
 cd(fullfile(rootpath, 'Analysis Scripts'));
 display('Directory Changed')
-
 
 % filtering
 disp(['Data Filtering: LP = ', num2str(LP), ' HP = ', num2str(HP)])
@@ -118,74 +117,38 @@ s = plotStyles();
 clr = [s.color1; s.color2];
 
 
-%% plotting topgraphies
+%% plotting speech envelopes 
 
-data = EEG.data; % channels x time x trials
-
+% calculating RMS 
+data = EEG.data; 
 window = round(0.05*EEG.srate); % 50 ms RMS window
-emg_env = movmean(abs(data), window, 2);
-
-channels2plot = [11 15];
-emg_data = emg_env(channels2plot, :, :);
-timewin = [0.05 0.5]; % seconds
-samples = dsearchn(EEG.times'/1000, timewin'); 
-
+emg_env = movmean(abs(data), window, 2); 
+% choosing data only from ear electrodes 
+chans = [11 15];
+emg_data = emg_env(chans, :, :);
+% extracting 'Pa' and 'Ka' trials
 pa_trials = strcmp({EEG.epoch.eventtype},'Pa');
 ka_trials = strcmp({EEG.epoch.eventtype},'Ka');
+% extracting data for 'Pa' and 'Ka' trials
+pa_data = emg_data(:,:,pa_trials);
+ka_data = emg_data(:,:,ka_trials);
 
-pa_data = mean(emg_data(:,samples(1):samples(2),pa_trials),[1 2]);
-ka_data = mean(emg_data(:,samples(1):samples(2),ka_trials),[1 2]);
-
-fprintf('Mean Pa amplitude = %.2f µV\n', mean(pa_data));
-fprintf('Mean Ka amplitude = %.2f µV\n', mean(ka_data));
-
-figure;
-plot(EEG.times, squeeze(mean(emg_data(1,:,:),3)), 'LineWidth',s.plt_linewidth); hold on;
-plot(EEG.times, squeeze(mean(emg_data(2,:,:),3)), 'LineWidth',s.plt_linewidth);
-xlabel('Time (ms)'); ylabel('EMG amplitude (µV)');
-legend('T7','T8');
-title('Speech EMG ("Pa" vs "Ka") Envelope');
-
-
-%%
-
-
-% Average across selected channels and trials
-pa_avg = squeeze(mean(mean(emg_data(:,:,pa_trials),3),1)); % mean over chan + trials
-ka_avg = squeeze(mean(mean(emg_data(:,:,ka_trials),3),1));
-
-% Plot
-figure;
-plot(EEG.times, pa_avg, 'r','LineWidth',s.plt_linewidth); hold on;
-plot(EEG.times, ka_avg, 'b','LineWidth',s.plt_linewidth);
-xlabel('Time (ms)');
-ylabel('EMG envelope (µV)');
+% plotting envelope
+plotname = 'sEMGenvelope';
+figure('Units', 'centimeters', 'Position', s.figsize);
+hold on;
+plot(EEG.times, squeeze(mean(mean(pa_data,3),1)), 'Color', clr(1,:),'LineWidth',s.plt_linewidth); 
+plot(EEG.times, squeeze(mean(mean(ka_data,3),1)), 'Color', clr(2,:),'LineWidth',s.plt_linewidth);
+xlabel('Time (ms)'); ylabel('Amplitude (µV)'); 
 legend('Pa','Ka');
 title('EMG Envelope for Speech Gestures ("Pa" vs "Ka")');
-grid on;
+set(gca, 'FontSize', s.plt_fontsize);
+
+% save plot
+if save_fig
+    plotsave = fullfile(plotfolder, [plotfile, plotname, '.png']);
+    saveas(gcf, plotsave)
+end
 
 
-%%
 
-% --- Average across channels
-pa_data = squeeze(mean(emg_data(:,:,pa_trials),1)); % time x trials
-ka_data = squeeze(mean(emg_data(:,:,ka_trials),1));
-
-% --- Plot single trials for Pa
-figure;
-subplot(2,1,1);
-plot(EEG.times, pa_data, 'Color',[1 0.6 0.6]); hold on; % light red for trials
-plot(EEG.times, mean(pa_data,2),'r','LineWidth',2); % mean in bold
-xlabel('Time (ms)');
-ylabel('EMG envelope (µV)');
-title('"Pa" Trials');
-grid on;
-
-% --- Plot single trials for Ka
-subplot(2,1,2);
-plot(EEG.times, ka_data, 'Color',[0.6 0.6 1]); hold on; % light blue for trials
-plot(EEG.times, mean(ka_data,2),'b','LineWidth',2); % mean in bold
-xlabel('Time (ms)');
-ylabel('EMG envelope (µV)');
-title('"Ka" Trials');
-grid on;

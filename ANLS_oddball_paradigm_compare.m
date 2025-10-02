@@ -12,10 +12,11 @@
 %        - Epoch the data based on events and epoch periods
 %        - Remove artifactual epochs
 %        - Baseline correction
-% 3. Compute ERP for regular and odd tones and plot them for each channel 
+% 3. Compute ERP for regular and odd tones and plot them 
 %
 % Pre-requisits:
-% - Assumes the data is in .set format (Use convertXDF.m script before running this script)
+% - Assumes the data is in .set format (Use PROC_convertXDF_and_mapOnsets.m 
+%   script before running this script)
 % - Requires following functions to run: plotStyles
 % 
 % Author:   Abin Jacob 

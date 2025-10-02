@@ -1,0 +1,38 @@
+allStreams=load_xdf('\\daten.w2kroot.uni-oldenburg.de\home\erer5685\Desktop\MentalabPilot26092025\sub-P001_ses-S001_task-Oddball_run-001_eeg.xdf')
+
+EEG8=allStreams{1}
+
+EEG32=allStreams{2}
+
+threshold=4000;
+MarkerChannel = EEG8.time_series(7, :);
+figure;plot(MarkerChannel)
+
+
+% Detect points where the signal crosses the threshold from below
+crossings = find(MarkerChannel(1:end-1) < threshold & MarkerChannel(2:end) >= threshold);
+hold all;
+plot(crossings, ones(size(crossings)),'x')
+time_indices_off_onsets=EEG8.time_stamps(crossings);
+
+  vec= EEG32.time_stamps;
+for k=1:length(crossings)
+  
+    target=time_indices_off_onsets(k)
+
+    [~, idx] = min(abs(vec - target));  % index of closest value
+    sampleInEEG32(k)=idx;
+end
+
+preSamples  = 100;            % number of samples before event
+postSamples = 300; 
+data= EEG32.time_series;
+for e = 1:length(crossings)
+    idx = sampleInEEG32(e);
+    % Make sure indices are valid (avoid going out of bounds)
+    if idx - preSamples >= 1 && idx + postSamples <= size(data,2)
+        epochs(:,:,e) =data(:, idx-preSamples : idx+postSamples);
+    end
+end
+
+figure; plot(mean(epochs(1,:,:),3))

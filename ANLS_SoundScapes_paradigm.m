@@ -11,10 +11,11 @@
 %        - Epoch the data based on events and epoch periods
 %        - Remove artifactual epochs
 %        - Baseline correction
-% 3. Compute ERP for regular and odd tones and plot them for each channel 
+% 3. Compute ERP for each sound file and plots them 
 %
 % Pre-requisits:
-% - Assumes the data is in .set format (Use convertXDF.m script before running this script)
+% - Assumes the data is in .set format (Use PROC_convertXDF_and_mapOnsets.m 
+%   script before running this script)
 % - Requires following functions to run: plotStyles
 % 
 % Author:   Abin Jacob 
@@ -46,7 +47,7 @@ audiofiles = {'doors-01', 'office-01', 'office-02'};
 events = {'SoundOnset'}; 
 % high-pass filter 
 HP = .1; HPorder = 826;                
-% low-pass filter  
+% low-pass filter   
 LP = 30; LPorder = 776; 
 % epoch period 
 epoch_start = -0.5; epoch_end = 1;
