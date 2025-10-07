@@ -139,8 +139,9 @@ figure('Units', 'centimeters', 'Position', s.figsize);
 hold on;
 plot(EEG.times, squeeze(mean(mean(pa_data,3),1)), 'Color', clr(1,:),'LineWidth',s.plt_linewidth); 
 plot(EEG.times, squeeze(mean(mean(ka_data,3),1)), 'Color', clr(2,:),'LineWidth',s.plt_linewidth);
+plot(EEG.times, squeeze(mean(mean(emg_data,3),1)), 'Color', 'k','LineWidth',s.plt_linewidth);
 xlabel('Time (ms)'); ylabel('Amplitude (µV)'); 
-legend('Pa','Ka');
+legend('Pa','Ka', 'Average');
 title('EMG Envelope for Speech Gestures ("Pa" vs "Ka")');
 set(gca, 'FontSize', s.plt_fontsize);
 
@@ -150,5 +151,13 @@ if save_fig
     saveas(gcf, plotsave)
 end
 
+% plotting topographies with Matlab markers
+peaks2plot = [156 376 504 804 1092];
+pop_topoplot(EEG, 1, peaks2plot, 'After Speech', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEG.chaninfo); 
+
+peaks2plot = [-1388 -1148 -648 -460 -40];
+pop_topoplot(EEG, 1, peaks2plot, 'Before Speech', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEG.chaninfo); 
 
 
+peaks2plot = [348 690 924 1412 1808];
+pop_topoplot(EEG, 1, peaks2plot, 'Before Speech', [1 length(peaks2plot)] ,0, 'electrodes', 'on', 'chaninfo', EEG.chaninfo); 
